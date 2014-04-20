@@ -2,6 +2,7 @@ package com.busico.android.training;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
@@ -30,19 +31,23 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void searchProduct() {
-        showSearchResult(getString(R.string.searchSuccessful, searchView.getQuery().toString()));
+        String queryString = searchView.getQuery().toString().trim();
+        Intent intent = new Intent(this, ResultsActivity.class);
+        intent.putExtra("queryString", queryString);
+        startActivity(intent);
+        //showSearchResult(getString(R.string.searchSuccessful, queryString));
     }
 
-    private void showSearchResult(String content) {
-        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
-        alertDialog.setTitle(getString(R.string.dialogTitle));
-        alertDialog.setMessage(content);
-        alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.btnOk),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                });
-        alertDialog.setIcon(R.drawable.ic_launcher);
-        alertDialog.show();
-    }
+//    private void showSearchResult(String content) {
+//        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+//        alertDialog.setTitle(getString(R.string.dialogTitle));
+//        alertDialog.setMessage(content);
+//        alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.btnOk),
+//                new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialog, int which) {
+//                    }
+//                });
+//        alertDialog.setIcon(R.drawable.ic_launcher);
+//        alertDialog.show();
+//    }
 }

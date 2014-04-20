@@ -7,5 +7,6 @@
     <string name="dialogTitle">Información</string>
     <string name="searchSuccessful">¡Búsqueda de texto \'%1$s\' realizada con éxito!</string>
     <string name="btnOk">Aceptar</string>
+    <string name="title_activity_results">Resultados</string>
 
 </resources>
