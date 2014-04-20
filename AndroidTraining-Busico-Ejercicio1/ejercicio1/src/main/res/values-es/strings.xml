@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Busico - Ejercicio 1</string>
+    <string name="labelSearch">Ingrese producto a buscar</string>
+    <string name="btnSearch">Buscar en MercadoLibre</string>
+    <string name="dialogTitle">Información</string>
+    <string name="searchSuccessful">¡Búsqueda de texto \'%1$s\' realizada con éxito!</string>
+    <string name="btnOk">Aceptar</string>
+
+</resources>
