@@ -8,6 +8,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
+import com.busico.android.training.adapters.ProductsAdapter;
+import com.busico.android.training.entities.Product;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -30,7 +33,7 @@ import java.util.List;
 public class ResultsActivity extends Activity {
 
     private static final String TAG = "Results";
-    private LinkedList<String> products;
+    private LinkedList<Product> products;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +43,7 @@ public class ResultsActivity extends Activity {
             String queryString = getIntent().getStringExtra("queryString");
             new SearchTask().execute(queryString);
         } else {
-            LinkedList<String> products = (LinkedList<String>) savedInstanceState.getSerializable("products");
+            LinkedList<Product> products = (LinkedList<Product>) savedInstanceState.getSerializable("products");
             showProducts(products);
         }
     }
@@ -51,22 +54,21 @@ public class ResultsActivity extends Activity {
         outState.putSerializable("products", products);
     }
 
-    private void showProducts(LinkedList<String> products) {
+    private void showProducts(LinkedList<Product> products) {
         this.products = products;
 
         ListView listView = (ListView) findViewById(R.id.lstResults);
-        ListAdapter listAdapter = new ArrayAdapter<String>(
-                ResultsActivity.this, android.R.layout.simple_list_item_1, products);
+        ListAdapter listAdapter = new ProductsAdapter(getLayoutInflater(), products);
         listView.setAdapter(listAdapter);
     }
 
-    private class SearchTask extends AsyncTask<String, Void, LinkedList<String>> {
+    private class SearchTask extends AsyncTask<String, Void, LinkedList<Product>> {
 
         @Override
-        protected LinkedList<String> doInBackground(String... parameters) {
+        protected LinkedList<Product> doInBackground(String... parameters) {
             String queryString = parameters[0];
 
-            LinkedList<String> result = null;
+            LinkedList<Product> result = null;
             try {
                 result = searchInMeli(queryString);
             } catch (Exception e) {
@@ -77,11 +79,11 @@ public class ResultsActivity extends Activity {
         }
 
         @Override
-        protected void onPostExecute(LinkedList<String> results) {
+        protected void onPostExecute(LinkedList<Product> results) {
             showProducts(results);
         }
 
-        private LinkedList<String> searchInMeli(String queryString) throws IOException, JSONException {
+        private LinkedList<Product> searchInMeli(String queryString) throws IOException, JSONException {
             Log.d(TAG, "Query is: " + queryString);
 
             String uri = "https://api.mercadolibre.com/sites/MLA/search";
@@ -106,14 +108,19 @@ public class ResultsActivity extends Activity {
 
             JSONObject jsonObject = new JSONObject(responseString);
 
-            LinkedList<String> results = new LinkedList<String>();
+            LinkedList<Product> results = new LinkedList<Product>();
             JSONArray products = jsonObject.getJSONArray("results");
             for (int i = 0; i < products.length(); i++) {
-                JSONObject product = products.getJSONObject(i);
-                String title = product.getString("title");
-                double price = product.getDouble("price");
+                JSONObject jsonProduct = products.getJSONObject(i);
+                String id = jsonProduct.getString("id");
+                String productUrl = jsonProduct.getString("permalink");
+                String title = jsonProduct.getString("title");
+                double price = jsonProduct.getDouble("price");
+                String imageUrl = jsonProduct.getString("thumbnail");
 
-                results.add(title + " - $ " + NumberFormat.getInstance().format(price));
+                Product product = new Product(id, productUrl, title, price, imageUrl);
+
+                results.add(product);
             }
 
             return results;
