@@ -43,16 +43,24 @@ public class ProductsAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int i, View view, ViewGroup viewGroup) {
+    public View getView(int i, View convertView, ViewGroup viewGroup) {
+        ProductListViewHolder viewHolder;
+
+        if(convertView == null) {
+            convertView = layoutInflater.inflate(R.layout.listitem_product, viewGroup, false);
+            viewHolder = new ProductListViewHolder();
+            viewHolder.txtDescription = (TextView) convertView.findViewById(R.id.txtDescription);
+            viewHolder.txtPrice = (TextView) convertView.findViewById(R.id.txtPrice);
+            convertView.setTag(viewHolder);
+        } else {
+            viewHolder = (ProductListViewHolder) convertView.getTag();
+        }
+
         Product product = products.get(i);
 
-        View row = layoutInflater.inflate(R.layout.listitem_product, viewGroup, false);
+        viewHolder.txtDescription.setText(product.getDescription());
+        viewHolder.txtPrice.setText("$ " + NumberFormat.getInstance().format(product.getPrice()));
 
-        TextView txtDescription = (TextView) row.findViewById(R.id.txtDescription);
-        TextView txtPrice = (TextView) row.findViewById(R.id.txtPrice);
-        txtDescription.setText(product.getDescription());
-        txtPrice.setText("$ " + NumberFormat.getInstance().format(product.getPrice()));
-
-        return row;
+        return convertView;
     }
 }
