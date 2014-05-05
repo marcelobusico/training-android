@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
@@ -15,7 +14,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.util.EntityUtils;
@@ -25,9 +23,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.text.NumberFormat;
 import java.util.LinkedList;
-import java.util.List;
 
 
 public class ResultsActivity extends Activity {
@@ -126,4 +122,5 @@ public class ResultsActivity extends Activity {
             return results;
         }
     }
+
 }
