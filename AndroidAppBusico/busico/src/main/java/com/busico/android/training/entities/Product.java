@@ -11,8 +11,8 @@ public class Product implements Serializable {
     private String description;
     private double price;
     private String imageUrl;
-    private Bitmap image;
-    private boolean downloadingImage;
+    private transient Bitmap image;
+    private transient boolean downloadingImage;
 
     public Product(String id, String productUrl, String description, double price, String imageUrl) {
         this.id = id;

@@ -44,17 +44,18 @@ public class ResultsActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_results);
-        if(savedInstanceState==null) {
+
+        productsAdapter = new ProductsAdapter(getLayoutInflater(), products);
+        ListView listView = (ListView) findViewById(R.id.lstResults);
+        listView.setAdapter(productsAdapter);
+
+        if (savedInstanceState == null) {
             String queryString = getIntent().getStringExtra("queryString");
             new SearchTask().execute(queryString);
         } else {
             LinkedList<Product> products = (LinkedList<Product>) savedInstanceState.getSerializable("products");
             showProducts(products);
         }
-
-        productsAdapter = new ProductsAdapter(getLayoutInflater(), products);
-        ListView listView = (ListView) findViewById(R.id.lstResults);
-        listView.setAdapter(productsAdapter);
 
         //Register the Image Downloader Receiver.
         IntentFilter filter = new IntentFilter(ContentDownloaderService.ACTION);
@@ -113,7 +114,6 @@ public class ResultsActivity extends Activity {
             request.setParams(basicHttpParams);
 
 
-
             HttpResponse response = client.execute(request);
             String responseString = EntityUtils.toString(response.getEntity());
 
@@ -160,8 +160,10 @@ public class ResultsActivity extends Activity {
 
                 Bitmap image = BitmapFactory.decodeByteArray(content, 0, content.length);
                 Product product = (Product) productsAdapter.getItem(index);
-                product.setImage(image);
-                productsAdapter.notifyDataSetChanged();
+                if (product.getId().equals(contentId)) {
+                    product.setImage(image);
+                    productsAdapter.notifyDataSetChanged();
+                }
             } catch (Exception ex) {
                 Log.e(TAG, "Error in onReceive method", ex);
             }
