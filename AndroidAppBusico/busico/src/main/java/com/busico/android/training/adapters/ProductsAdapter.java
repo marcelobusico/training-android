@@ -1,10 +1,6 @@
 package com.busico.android.training.adapters;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +10,7 @@ import android.widget.TextView;
 
 import com.busico.android.training.R;
 import com.busico.android.training.entities.Product;
-import com.busico.android.training.utils.ImageDownloader;
+import com.busico.android.training.utils.ContentDownloaderService;
 
 import java.text.NumberFormat;
 import java.util.List;
@@ -50,7 +46,7 @@ public class ProductsAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int i, View convertView, ViewGroup viewGroup) {
+    public View getView(int position, View convertView, ViewGroup viewGroup) {
         ProductListViewHolder viewHolder;
 
         if(convertView == null) {
@@ -64,40 +60,30 @@ public class ProductsAdapter extends BaseAdapter {
             viewHolder = (ProductListViewHolder) convertView.getTag();
         }
 
-        Product product = products.get(i);
+        Product product = products.get(position);
 
         viewHolder.txtDescription.setText(product.getDescription());
         viewHolder.txtPrice.setText("$ " + NumberFormat.getInstance().format(product.getPrice()));
 
-        //Schedule the download of the product image.
-        Intent imageDownloaderIntent = new Intent(convertView.getContext(), ImageDownloader.class);
-        imageDownloaderIntent.putExtra(ImageDownloader.IN_URL, product.getImageUrl());
-        convertView.getContext().startService(imageDownloaderIntent);
+        if(product.getImage() == null) {
+            viewHolder.imageView.setImageDrawable(viewGroup.getResources().getDrawable(R.drawable.product_placeholder));
 
-        //Register the receiver.
-        IntentFilter filter = new IntentFilter(ImageDownloader.OUT_ACTION);
-        filter.addCategory(Intent.CATEGORY_DEFAULT);
-        ImageDownloadedReceiver receiver = new ImageDownloadedReceiver(convertView, this);
-        convertView.getContext().registerReceiver(receiver, filter);
+            if(!product.isDownloadingImage()) {
+                product.setDownloadingImage(true);
+
+                //Schedule the download of the product image.
+                Intent contentDownloaderIntent = new Intent(convertView.getContext(), ContentDownloaderService.class);
+                contentDownloaderIntent.putExtra(ContentDownloaderService.URL, product.getImageUrl());
+                contentDownloaderIntent.putExtra(ContentDownloaderService.CONTENT_ID, product.getId());
+                contentDownloaderIntent.putExtra(ContentDownloaderService.INDEX, position);
+                convertView.getContext().startService(contentDownloaderIntent);
+            }
+        } else {
+            //Set the image already downloaded.
+            viewHolder.imageView.setImageBitmap(product.getImage());
+        }
 
         return convertView;
     }
 
-    public static class ImageDownloadedReceiver extends BroadcastReceiver {
-
-        private View view;
-        private ProductsAdapter productsAdapter;
-
-        public ImageDownloadedReceiver(View view, ProductsAdapter productsAdapter) {
-            this.view = view;
-            this.productsAdapter = productsAdapter;
-        }
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Bitmap image = intent.getParcelableExtra(ImageDownloader.OUT_IMAGE);
-            ((ProductListViewHolder) view.getTag()).imageView.setImageBitmap(image);
-            productsAdapter.notifyDataSetChanged();
-        }
-    }
 }

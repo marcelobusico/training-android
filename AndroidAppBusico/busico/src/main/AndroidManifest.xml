@@ -20,6 +20,7 @@
             android:name="com.busico.android.training.ResultsActivity"
             android:label="@string/title_activity_results" >
         </activity>
+        <service android:name=".utils.ContentDownloaderService"></service>
     </application>
 
     <uses-permission android:name="android.permission.INTERNET"></uses-permission>

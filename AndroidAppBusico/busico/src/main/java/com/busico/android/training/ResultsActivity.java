@@ -1,14 +1,22 @@
 package com.busico.android.training;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.busico.android.training.adapters.ProductsAdapter;
 import com.busico.android.training.entities.Product;
+import com.busico.android.training.utils.ContentDownloaderService;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -29,7 +37,8 @@ import java.util.LinkedList;
 public class ResultsActivity extends Activity {
 
     private static final String TAG = "Results";
-    private LinkedList<Product> products;
+    private final LinkedList<Product> products = new LinkedList<Product>();
+    private ProductsAdapter productsAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +51,16 @@ public class ResultsActivity extends Activity {
             LinkedList<Product> products = (LinkedList<Product>) savedInstanceState.getSerializable("products");
             showProducts(products);
         }
+
+        productsAdapter = new ProductsAdapter(getLayoutInflater(), products);
+        ListView listView = (ListView) findViewById(R.id.lstResults);
+        listView.setAdapter(productsAdapter);
+
+        //Register the Image Downloader Receiver.
+        IntentFilter filter = new IntentFilter(ContentDownloaderService.ACTION);
+        filter.addCategory(Intent.CATEGORY_DEFAULT);
+        ImageDownloadedReceiver receiver = new ImageDownloadedReceiver(productsAdapter);
+        registerReceiver(receiver, filter);
     }
 
     @Override
@@ -51,11 +70,9 @@ public class ResultsActivity extends Activity {
     }
 
     private void showProducts(LinkedList<Product> products) {
-        this.products = products;
-
-        ListView listView = (ListView) findViewById(R.id.lstResults);
-        ListAdapter listAdapter = new ProductsAdapter(getLayoutInflater(), products);
-        listView.setAdapter(listAdapter);
+        this.products.clear();
+        this.products.addAll(products);
+        productsAdapter.notifyDataSetChanged();
     }
 
     private class SearchTask extends AsyncTask<String, Void, LinkedList<Product>> {
@@ -123,4 +140,31 @@ public class ResultsActivity extends Activity {
         }
     }
 
+    private static class ImageDownloadedReceiver extends BroadcastReceiver {
+
+        private static final String TAG = "ImageDownloadedReceiver";
+        private ProductsAdapter productsAdapter;
+
+        public ImageDownloadedReceiver(ProductsAdapter productsAdapter) {
+            this.productsAdapter = productsAdapter;
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            try {
+                String contentId = intent.getStringExtra(ContentDownloaderService.CONTENT_ID);
+                byte[] content = intent.getByteArrayExtra(ContentDownloaderService.CONTENT);
+                int index = intent.getIntExtra(ContentDownloaderService.INDEX, 0);
+
+                Log.d(TAG, "onReceive method called for contentId " + contentId);
+
+                Bitmap image = BitmapFactory.decodeByteArray(content, 0, content.length);
+                Product product = (Product) productsAdapter.getItem(index);
+                product.setImage(image);
+                productsAdapter.notifyDataSetChanged();
+            } catch (Exception ex) {
+                Log.e(TAG, "Error in onReceive method", ex);
+            }
+        }
+    }
 }

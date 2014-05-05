@@ -1,5 +1,7 @@
 package com.busico.android.training.entities;
 
+import android.graphics.Bitmap;
+
 import java.io.Serializable;
 
 public class Product implements Serializable {
@@ -9,6 +11,8 @@ public class Product implements Serializable {
     private String description;
     private double price;
     private String imageUrl;
+    private Bitmap image;
+    private boolean downloadingImage;
 
     public Product(String id, String productUrl, String description, double price, String imageUrl) {
         this.id = id;
@@ -56,6 +60,22 @@ public class Product implements Serializable {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public Bitmap getImage() {
+        return image;
+    }
+
+    public void setImage(Bitmap image) {
+        this.image = image;
+    }
+
+    public boolean isDownloadingImage() {
+        return downloadingImage;
+    }
+
+    public void setDownloadingImage(boolean downloadingImage) {
+        this.downloadingImage = downloadingImage;
     }
 
     @Override
