@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">Android App - Busico</string>
-    <string name="labelSearch">Enter product to be search</string>
+    <string name="labelSearch">Enter item to be search</string>
     <string name="btnSearch">Search in MercadoLibre</string>
     <string name="dialogTitle">Information</string>
     <string name="searchSuccessful">Text search \'%1$s\' performed successfully!</string>

@@ -9,35 +9,35 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.busico.android.training.R;
-import com.busico.android.training.entities.Product;
+import com.busico.android.training.entities.Item;
 import com.busico.android.training.utils.ContentDownloaderService;
 
 import java.text.NumberFormat;
 import java.util.List;
 
 
-public class ProductsAdapter extends BaseAdapter {
+public class ItemsAdapter extends BaseAdapter {
 
     private final LayoutInflater layoutInflater;
-    private final List<Product> products;
+    private final List<Item> items;
 
-    public ProductsAdapter(LayoutInflater layoutInflater, List<Product> products) {
+    public ItemsAdapter(LayoutInflater layoutInflater, List<Item> items) {
         this.layoutInflater = layoutInflater;
-        this.products = products;
+        this.items = items;
     }
 
     @Override
     public int getCount() {
-        if (products == null) {
+        if (items == null) {
             return 0;
         } else {
-            return products.size();
+            return items.size();
         }
     }
 
     @Override
     public Object getItem(int i) {
-        return products.get(i);
+        return items.get(i);
     }
 
     @Override
@@ -47,40 +47,40 @@ public class ProductsAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup viewGroup) {
-        ProductListViewHolder viewHolder;
+        ItemListViewHolder viewHolder;
 
         if(convertView == null) {
             convertView = layoutInflater.inflate(R.layout.listitem_product, viewGroup, false);
-            viewHolder = new ProductListViewHolder();
+            viewHolder = new ItemListViewHolder();
             viewHolder.txtDescription = (TextView) convertView.findViewById(R.id.txtDescription);
             viewHolder.txtPrice = (TextView) convertView.findViewById(R.id.txtPrice);
             viewHolder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
             convertView.setTag(viewHolder);
         } else {
-            viewHolder = (ProductListViewHolder) convertView.getTag();
+            viewHolder = (ItemListViewHolder) convertView.getTag();
         }
 
-        Product product = products.get(position);
+        Item item = items.get(position);
 
-        viewHolder.txtDescription.setText(product.getDescription());
-        viewHolder.txtPrice.setText("$ " + NumberFormat.getInstance().format(product.getPrice()));
+        viewHolder.txtDescription.setText(item.getDescription());
+        viewHolder.txtPrice.setText("$ " + NumberFormat.getInstance().format(item.getPrice()));
 
-        if(product.getImage() == null) {
+        if(item.getImage() == null) {
             viewHolder.imageView.setImageDrawable(viewGroup.getResources().getDrawable(R.drawable.product_placeholder));
 
-            if(!product.isDownloadingImage()) {
-                product.setDownloadingImage(true);
+            if(!item.isDownloadingImage()) {
+                item.setDownloadingImage(true);
 
-                //Schedule the download of the product image.
+                //Schedule the download of the item image.
                 Intent contentDownloaderIntent = new Intent(convertView.getContext(), ContentDownloaderService.class);
-                contentDownloaderIntent.putExtra(ContentDownloaderService.URL, product.getImageUrl());
-                contentDownloaderIntent.putExtra(ContentDownloaderService.CONTENT_ID, product.getId());
+                contentDownloaderIntent.putExtra(ContentDownloaderService.URL, item.getImageUrl());
+                contentDownloaderIntent.putExtra(ContentDownloaderService.CONTENT_ID, item.getId());
                 contentDownloaderIntent.putExtra(ContentDownloaderService.INDEX, position);
                 convertView.getContext().startService(contentDownloaderIntent);
             }
         } else {
             //Set the image already downloaded.
-            viewHolder.imageView.setImageBitmap(product.getImage());
+            viewHolder.imageView.setImageBitmap(item.getImage());
         }
 
         return convertView;

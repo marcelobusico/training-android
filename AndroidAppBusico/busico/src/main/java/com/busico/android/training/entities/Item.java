@@ -4,7 +4,7 @@ import android.graphics.Bitmap;
 
 import java.io.Serializable;
 
-public class Product implements Serializable {
+public class Item implements Serializable {
 
     private String id;
     private String productUrl;
@@ -14,7 +14,7 @@ public class Product implements Serializable {
     private transient Bitmap image;
     private transient boolean downloadingImage;
 
-    public Product(String id, String productUrl, String description, double price, String imageUrl) {
+    public Item(String id, String productUrl, String description, double price, String imageUrl) {
         this.id = id;
         this.productUrl = productUrl;
         this.description = description;

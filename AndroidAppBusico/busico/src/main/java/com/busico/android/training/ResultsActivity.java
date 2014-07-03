@@ -10,12 +10,10 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 
-import com.busico.android.training.adapters.ProductsAdapter;
-import com.busico.android.training.entities.Product;
+import com.busico.android.training.adapters.ItemsAdapter;
+import com.busico.android.training.entities.Item;
 import com.busico.android.training.utils.ContentDownloaderService;
 
 import org.apache.http.HttpResponse;
@@ -37,52 +35,52 @@ import java.util.LinkedList;
 public class ResultsActivity extends Activity {
 
     private static final String TAG = "Results";
-    private final LinkedList<Product> products = new LinkedList<Product>();
-    private ProductsAdapter productsAdapter;
+    private final LinkedList<Item> items = new LinkedList<Item>();
+    private ItemsAdapter itemsAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_results);
 
-        productsAdapter = new ProductsAdapter(getLayoutInflater(), products);
+        itemsAdapter = new ItemsAdapter(getLayoutInflater(), items);
         ListView listView = (ListView) findViewById(R.id.lstResults);
-        listView.setAdapter(productsAdapter);
+        listView.setAdapter(itemsAdapter);
 
         if (savedInstanceState == null) {
             String queryString = getIntent().getStringExtra("queryString");
             new SearchTask().execute(queryString);
         } else {
-            LinkedList<Product> products = (LinkedList<Product>) savedInstanceState.getSerializable("products");
-            showProducts(products);
+            LinkedList<Item> items = (LinkedList<Item>) savedInstanceState.getSerializable("items");
+            showProducts(items);
         }
 
         //Register the Image Downloader Receiver.
         IntentFilter filter = new IntentFilter(ContentDownloaderService.ACTION);
         filter.addCategory(Intent.CATEGORY_DEFAULT);
-        ImageDownloadedReceiver receiver = new ImageDownloadedReceiver(productsAdapter);
+        ImageDownloadedReceiver receiver = new ImageDownloadedReceiver(itemsAdapter);
         registerReceiver(receiver, filter);
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable("products", products);
+        outState.putSerializable("items", items);
     }
 
-    private void showProducts(LinkedList<Product> products) {
-        this.products.clear();
-        this.products.addAll(products);
-        productsAdapter.notifyDataSetChanged();
+    private void showProducts(LinkedList<Item> items) {
+        this.items.clear();
+        this.items.addAll(items);
+        itemsAdapter.notifyDataSetChanged();
     }
 
-    private class SearchTask extends AsyncTask<String, Void, LinkedList<Product>> {
+    private class SearchTask extends AsyncTask<String, Void, LinkedList<Item>> {
 
         @Override
-        protected LinkedList<Product> doInBackground(String... parameters) {
+        protected LinkedList<Item> doInBackground(String... parameters) {
             String queryString = parameters[0];
 
-            LinkedList<Product> result = null;
+            LinkedList<Item> result = null;
             try {
                 result = searchInMeli(queryString);
             } catch (Exception e) {
@@ -93,11 +91,11 @@ public class ResultsActivity extends Activity {
         }
 
         @Override
-        protected void onPostExecute(LinkedList<Product> results) {
+        protected void onPostExecute(LinkedList<Item> results) {
             showProducts(results);
         }
 
-        private LinkedList<Product> searchInMeli(String queryString) throws IOException, JSONException {
+        private LinkedList<Item> searchInMeli(String queryString) throws IOException, JSONException {
             Log.d(TAG, "Query is: " + queryString);
 
             String uri = "https://api.mercadolibre.com/sites/MLA/search";
@@ -121,7 +119,7 @@ public class ResultsActivity extends Activity {
 
             JSONObject jsonObject = new JSONObject(responseString);
 
-            LinkedList<Product> results = new LinkedList<Product>();
+            LinkedList<Item> results = new LinkedList<Item>();
             JSONArray products = jsonObject.getJSONArray("results");
             for (int i = 0; i < products.length(); i++) {
                 JSONObject jsonProduct = products.getJSONObject(i);
@@ -131,9 +129,9 @@ public class ResultsActivity extends Activity {
                 double price = jsonProduct.getDouble("price");
                 String imageUrl = jsonProduct.getString("thumbnail");
 
-                Product product = new Product(id, productUrl, title, price, imageUrl);
+                Item item = new Item(id, productUrl, title, price, imageUrl);
 
-                results.add(product);
+                results.add(item);
             }
 
             return results;
@@ -143,10 +141,10 @@ public class ResultsActivity extends Activity {
     private static class ImageDownloadedReceiver extends BroadcastReceiver {
 
         private static final String TAG = "ImageDownloadedReceiver";
-        private ProductsAdapter productsAdapter;
+        private ItemsAdapter itemsAdapter;
 
-        public ImageDownloadedReceiver(ProductsAdapter productsAdapter) {
-            this.productsAdapter = productsAdapter;
+        public ImageDownloadedReceiver(ItemsAdapter itemsAdapter) {
+            this.itemsAdapter = itemsAdapter;
         }
 
         @Override
@@ -159,10 +157,10 @@ public class ResultsActivity extends Activity {
                 Log.d(TAG, "onReceive method called for contentId " + contentId);
 
                 Bitmap image = BitmapFactory.decodeByteArray(content, 0, content.length);
-                Product product = (Product) productsAdapter.getItem(index);
-                if (product.getId().equals(contentId)) {
-                    product.setImage(image);
-                    productsAdapter.notifyDataSetChanged();
+                Item item = (Item) itemsAdapter.getItem(index);
+                if (item.getId().equals(contentId)) {
+                    item.setImage(image);
+                    itemsAdapter.notifyDataSetChanged();
                 }
             } catch (Exception ex) {
                 Log.e(TAG, "Error in onReceive method", ex);
