@@ -47,26 +47,26 @@ public class ItemsAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup viewGroup) {
-        ItemListViewHolder viewHolder;
+        ItemListViewHolder itemListViewHolder;
 
         if(convertView == null) {
             convertView = layoutInflater.inflate(R.layout.listitem_product, viewGroup, false);
-            viewHolder = new ItemListViewHolder();
-            viewHolder.txtDescription = (TextView) convertView.findViewById(R.id.txtDescription);
-            viewHolder.txtPrice = (TextView) convertView.findViewById(R.id.txtPrice);
-            viewHolder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
-            convertView.setTag(viewHolder);
+            itemListViewHolder = new ItemListViewHolder();
+            itemListViewHolder.txtDescription = (TextView) convertView.findViewById(R.id.txtDescription);
+            itemListViewHolder.txtPrice = (TextView) convertView.findViewById(R.id.txtPrice);
+            itemListViewHolder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
+            convertView.setTag(itemListViewHolder);
         } else {
-            viewHolder = (ItemListViewHolder) convertView.getTag();
+            itemListViewHolder = (ItemListViewHolder) convertView.getTag();
         }
 
         Item item = items.get(position);
 
-        viewHolder.txtDescription.setText(item.getDescription());
-        viewHolder.txtPrice.setText("$ " + NumberFormat.getInstance().format(item.getPrice()));
+        itemListViewHolder.txtDescription.setText(item.getDescription());
+        itemListViewHolder.txtPrice.setText("$ " + NumberFormat.getInstance().format(item.getPrice()));
 
         if(item.getImage() == null) {
-            viewHolder.imageView.setImageDrawable(viewGroup.getResources().getDrawable(R.drawable.product_placeholder));
+            itemListViewHolder.imageView.setImageDrawable(viewGroup.getResources().getDrawable(R.drawable.product_placeholder));
 
             if(!item.isDownloadingImage()) {
                 item.setDownloadingImage(true);
@@ -80,7 +80,7 @@ public class ItemsAdapter extends BaseAdapter {
             }
         } else {
             //Set the image already downloaded.
-            viewHolder.imageView.setImageBitmap(item.getImage());
+            itemListViewHolder.imageView.setImageBitmap(item.getImage());
         }
 
         return convertView;
