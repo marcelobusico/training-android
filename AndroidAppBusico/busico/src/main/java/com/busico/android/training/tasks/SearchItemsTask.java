@@ -28,7 +28,7 @@ public class SearchItemsTask extends AsyncTask<String, Void, LinkedList<Item>> {
 
         LinkedList<Item> result = null;
         try {
-            result = new ItemManager().searchItems(queryString);
+            result = new ItemManager().searchItems(queryString, 100, 0);
         } catch (Exception e) {
             Log.e(TAG, e.getMessage(), e);
         }

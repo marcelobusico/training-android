@@ -29,6 +29,10 @@ public class ContentDownloaderService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         try {
             String url = intent.getStringExtra(URL);
+            if (url == null || url.isEmpty()) {
+                return;
+            }
+
             String contentId = intent.getStringExtra(CONTENT_ID);
             int index = intent.getIntExtra(INDEX, 0);
 
