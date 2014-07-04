@@ -1,13 +1,13 @@
 package com.busico.android.training;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SearchView;
+
+import com.busico.android.training.storage.AppSettings;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -28,6 +28,16 @@ public class MainActivity extends ActionBarActivity {
                 searchProduct();
             }
         });
+
+        String savedValue = new AppSettings(this).getSavedValue("item_query");
+        searchView.setQuery(savedValue, false);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        String queryString = searchView.getQuery().toString().trim();
+        new AppSettings(this).saveValue("item_query", queryString);
     }
 
     private void searchProduct() {
