@@ -49,11 +49,12 @@ public class ItemsAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup viewGroup) {
         ItemListViewHolder itemListViewHolder;
 
-        if(convertView == null) {
+        if (convertView == null) {
             convertView = layoutInflater.inflate(R.layout.listitem_product, viewGroup, false);
             itemListViewHolder = new ItemListViewHolder();
             itemListViewHolder.txtDescription = (TextView) convertView.findViewById(R.id.txtDescription);
             itemListViewHolder.txtPrice = (TextView) convertView.findViewById(R.id.txtPrice);
+            itemListViewHolder.txtQuantity = (TextView) convertView.findViewById(R.id.txtQuantity);
             itemListViewHolder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
             convertView.setTag(itemListViewHolder);
         } else {
@@ -63,12 +64,22 @@ public class ItemsAdapter extends BaseAdapter {
         Item item = items.get(position);
 
         itemListViewHolder.txtDescription.setText(item.getDescription());
+
+        if (itemListViewHolder.txtSubtitle != null) {
+            itemListViewHolder.txtSubtitle.setText(item.getSubtitle());
+        }
+
         itemListViewHolder.txtPrice.setText("$ " + NumberFormat.getInstance().format(item.getPrice()));
 
-        if(item.getImage() == null) {
+        if (itemListViewHolder.txtQuantity != null) {
+            String quantityStr = convertView.getContext().getString(R.string.quantity);
+            itemListViewHolder.txtQuantity.setText(quantityStr + ": " + NumberFormat.getInstance().format(item.getAvailableQuantity()));
+        }
+
+        if (item.getImage() == null) {
             itemListViewHolder.imageView.setImageDrawable(viewGroup.getResources().getDrawable(R.drawable.product_placeholder));
 
-            if(!item.isDownloadingImage()) {
+            if (!item.isDownloadingImage()) {
                 item.setDownloadingImage(true);
 
                 //Schedule the download of the item image.

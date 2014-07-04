@@ -10,7 +10,9 @@ public class Item implements Serializable {
     private String productUrl;
     private String description;
     private double price;
+    private String subtitle;
     private String imageUrl;
+    private int availableQuantity;
     private transient Bitmap image;
     private transient boolean downloadingImage;
 
@@ -52,6 +54,22 @@ public class Item implements Serializable {
 
     public void setPrice(double price) {
         this.price = price;
+    }
+
+    public int getAvailableQuantity() {
+        return availableQuantity;
+    }
+
+    public void setAvailableQuantity(int availableQuantity) {
+        this.availableQuantity = availableQuantity;
+    }
+
+    public String getSubtitle() {
+        return subtitle;
+    }
+
+    public void setSubtitle(String subtitle) {
+        this.subtitle = subtitle;
     }
 
     public String getImageUrl() {

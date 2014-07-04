@@ -56,8 +56,12 @@ public class ItemManager {
             String title = jsonProduct.getString("title");
             double price = jsonProduct.getDouble("price");
             String imageUrl = jsonProduct.getString("thumbnail");
+            int quantity = jsonProduct.getInt("available_quantity");
+            String subtitle = jsonProduct.getString("subtitle");
 
             Item item = new Item(id, productUrl, title, price, imageUrl);
+            item.setAvailableQuantity(quantity);
+            item.setSubtitle(subtitle != null && !subtitle.equals("null") ? subtitle : null);
 
             results.add(item);
         }

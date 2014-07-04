@@ -8,5 +8,6 @@
     <string name="searchSuccessful">Text search \'%1$s\' performed successfully!</string>
     <string name="btnOk">OK</string>
     <string name="title_activity_results">Results</string>
+    <string name="quantity">Quantity</string>
 
 </resources>
