@@ -84,11 +84,19 @@ public class ItemsAdapter extends BaseAdapter {
             itemListViewHolder.txtSubtitle.setText(item.getSubtitle());
         }
 
-        itemListViewHolder.txtPrice.setText("$ " + NumberFormat.getInstance().format(item.getPrice()));
+        if (item.getPrice() == null) {
+            itemListViewHolder.txtPrice.setText(null);
+        } else {
+            itemListViewHolder.txtPrice.setText("$ " + NumberFormat.getInstance().format(item.getPrice()));
+        }
 
         if (itemListViewHolder.txtQuantity != null) {
-            String quantityStr = convertView.getContext().getString(R.string.quantity);
-            itemListViewHolder.txtQuantity.setText(quantityStr + ": " + NumberFormat.getInstance().format(item.getAvailableQuantity()));
+            if (item.getAvailableQuantity() == null) {
+                itemListViewHolder.txtQuantity.setText(null);
+            } else {
+                String quantityStr = convertView.getContext().getString(R.string.quantity);
+                itemListViewHolder.txtQuantity.setText(quantityStr + ": " + NumberFormat.getInstance().format(item.getAvailableQuantity()));
+            }
         }
 
         if (item.getImage() == null) {

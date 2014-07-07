@@ -26,9 +26,13 @@ public class ItemManager {
     public LinkedList<Item> searchItems(String queryString, int limit, int offset) throws IOException, JSONException {
         Log.d(TAG, "Query is: " + queryString);
 
-        String uri = "https://api.mercadolibre.com/sites/MLA/search";
-        uri += "?q=" + URLEncoder.encode(queryString, "utf-8");
-        uri += "&limit=" + limit + "&offset=" + offset;
+        StringBuilder uriStringBuilder = new StringBuilder();
+        uriStringBuilder.append("https://api.mercadolibre.com/sites/MLA/search");
+        uriStringBuilder.append("?q=").append(URLEncoder.encode(queryString, "utf-8"));
+        uriStringBuilder.append("&limit=").append(limit);
+        uriStringBuilder.append("&offset=").append(offset);
+
+        String uri = uriStringBuilder.toString();
 
         Log.d(TAG, "URI is: " + uri);
 
@@ -52,9 +56,9 @@ public class ItemManager {
             String id = jsonProduct.getString("id");
             String productUrl = jsonProduct.getString("permalink");
             String title = jsonProduct.getString("title");
-            double price = jsonProduct.getDouble("price");
+            Double price = jsonProduct.getDouble("price");
             String imageUrl = jsonProduct.getString("thumbnail");
-            int quantity = jsonProduct.getInt("available_quantity");
+            Integer quantity = jsonProduct.getInt("available_quantity");
             String subtitle = jsonProduct.getString("subtitle");
 
             Item item = new Item(id, productUrl, title, price, imageUrl);
