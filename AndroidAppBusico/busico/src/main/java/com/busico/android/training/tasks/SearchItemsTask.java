@@ -9,13 +9,13 @@ import com.busico.android.training.utils.Closure;
 
 import java.util.LinkedList;
 
-public class SearchItemsTask extends AsyncTask<String, Void, LinkedList<Item>> {
+public class SearchItemsTask extends AsyncTask<Object, Void, LinkedList<Item>> {
 
     private static final String TAG = "SearchItemsTask";
     private final Closure<LinkedList<Item>> closure;
 
-    public static void searchItems(String queryString, Closure<LinkedList<Item>> closure) {
-        new SearchItemsTask(closure).execute(queryString);
+    public static void searchItems(String queryString, int limit, int offset, Closure<LinkedList<Item>> closure) {
+        new SearchItemsTask(closure).execute(queryString, new Integer(limit), new Integer(offset));
     }
 
     private SearchItemsTask(Closure<LinkedList<Item>> closure) {
@@ -23,12 +23,14 @@ public class SearchItemsTask extends AsyncTask<String, Void, LinkedList<Item>> {
     }
 
     @Override
-    protected LinkedList<Item> doInBackground(String... parameters) {
-        String queryString = parameters[0];
+    protected LinkedList<Item> doInBackground(Object... parameters) {
+        String queryString = parameters[0].toString();
+        Integer limit = (Integer) parameters[1];
+        Integer offset = (Integer) parameters[2];
 
         LinkedList<Item> result = null;
         try {
-            result = new ItemManager().searchItems(queryString, 100, 0);
+            result = new ItemManager().searchItems(queryString, limit, offset);
         } catch (Exception e) {
             Log.e(TAG, e.getMessage(), e);
         }

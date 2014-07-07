@@ -20,6 +20,7 @@ public class ResultsActivity extends Activity {
 
     private static final String TAG = "Results";
     private final LinkedList<Item> items = new LinkedList<Item>();
+    private String queryString;
     private ItemsAdapter itemsAdapter;
     private ImageDownloadedReceiver receiver;
 
@@ -34,8 +35,9 @@ public class ResultsActivity extends Activity {
         listView.setAdapter(itemsAdapter);
 
         if (savedInstanceState == null) {
-            String queryString = getIntent().getStringExtra("queryString");
-            SearchItemsTask.searchItems(queryString, new Closure<LinkedList<Item>>() {
+            queryString = getIntent().getStringExtra("queryString");
+            itemsAdapter.setQueryString(queryString);
+            SearchItemsTask.searchItems(queryString, 15, 0, new Closure<LinkedList<Item>>() {
                 @Override
                 public void executeOnSuccess(LinkedList<Item> result) {
                     showProducts(result);
@@ -43,6 +45,8 @@ public class ResultsActivity extends Activity {
             });
         } else {
             LinkedList<Item> items = (LinkedList<Item>) savedInstanceState.getSerializable("items");
+            queryString = savedInstanceState.getString("queryString");
+            itemsAdapter.setQueryString(queryString);
             showProducts(items);
         }
 
@@ -58,6 +62,7 @@ public class ResultsActivity extends Activity {
         Log.d(TAG, "onSaveInstanceState");
         super.onSaveInstanceState(outState);
         outState.putSerializable("items", items);
+        outState.putString("queryString", queryString);
     }
 
     @Override
