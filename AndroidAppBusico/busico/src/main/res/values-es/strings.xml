@@ -9,5 +9,6 @@
     <string name="btnOk">Aceptar</string>
     <string name="title_activity_results">Resultados</string>
     <string name="quantity">Cantidad</string>
+    <string name="title_activity_item_details">Detalles</string>
 
 </resources>

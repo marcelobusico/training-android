@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.busico.android.training.adapters.ItemsAdapter;
@@ -34,6 +36,13 @@ public class ResultsActivity extends Activity {
         ListView listView = (ListView) findViewById(R.id.lstResults);
         listView.setAdapter(itemsAdapter);
 
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                viewProductDetail((Item) itemsAdapter.getItem(position));
+            }
+        });
+
         if (savedInstanceState == null) {
             queryString = getIntent().getStringExtra("queryString");
             itemsAdapter.setQueryString(queryString);
@@ -55,6 +64,12 @@ public class ResultsActivity extends Activity {
         filter.addCategory(Intent.CATEGORY_DEFAULT);
         receiver = new ImageDownloadedReceiver(itemsAdapter);
         registerReceiver(receiver, filter);
+    }
+
+    private void viewProductDetail(Item item) {
+        Intent intent = new Intent(this, ItemDetailsActivity.class);
+        intent.putExtra("item", item);
+        startActivity(intent);
     }
 
     @Override
