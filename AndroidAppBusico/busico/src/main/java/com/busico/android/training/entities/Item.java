@@ -9,14 +9,14 @@ public class Item implements Serializable {
     private String id;
     private String productUrl;
     private String description;
-    private double price;
+    private Double price;
     private String subtitle;
     private String imageUrl;
-    private int availableQuantity;
+    private Integer availableQuantity;
     private transient Bitmap image;
     private transient boolean downloadingImage;
 
-    public Item(String id, String productUrl, String description, double price, String imageUrl) {
+    public Item(String id, String productUrl, String description, Double price, String imageUrl) {
         this.id = id;
         this.productUrl = productUrl;
         this.description = description;
@@ -48,19 +48,19 @@ public class Item implements Serializable {
         this.description = description;
     }
 
-    public double getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 
-    public int getAvailableQuantity() {
+    public Integer getAvailableQuantity() {
         return availableQuantity;
     }
 
-    public void setAvailableQuantity(int availableQuantity) {
+    public void setAvailableQuantity(Integer availableQuantity) {
         this.availableQuantity = availableQuantity;
     }
 
