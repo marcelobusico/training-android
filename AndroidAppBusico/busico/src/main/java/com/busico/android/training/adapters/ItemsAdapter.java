@@ -57,6 +57,9 @@ public class ItemsAdapter extends BaseAdapter implements ContentListener {
 
     @Override
     public Object getItem(int i) {
+        if (i >= getCount()) {
+            return null;
+        }
         return items.get(i);
     }
 
@@ -139,8 +142,10 @@ public class ItemsAdapter extends BaseAdapter implements ContentListener {
     @Override
     public void notifyContentAvailable(int position, Object content) {
         Item item = (Item) getItem(position);
-        item.setImage((Bitmap) content);
-        notifyDataSetChanged();
+        if (item != null) {
+            item.setImage((Bitmap) content);
+            notifyDataSetChanged();
+        }
     }
 
     private void loadMoreData() {
