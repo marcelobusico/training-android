@@ -23,13 +23,14 @@ public class ItemManager {
 
     private static final String TAG = "ItemManager";
 
-    public LinkedList<Item> searchItems(String queryString) throws IOException, JSONException {
+    public LinkedList<Item> searchItems(String queryString, int limit, int offset) throws IOException, JSONException {
         Log.d(TAG, "Query is: " + queryString);
 
         StringBuilder uriStringBuilder = new StringBuilder();
         uriStringBuilder.append("https://api.mercadolibre.com/sites/MLA/search");
         uriStringBuilder.append("?q=").append(URLEncoder.encode(queryString, "utf-8"));
-        uriStringBuilder.append("&limit=100");
+        uriStringBuilder.append("&limit=").append(limit);
+        uriStringBuilder.append("&offset=").append(offset);
 
         String uri = uriStringBuilder.toString();
 
@@ -38,8 +39,6 @@ public class ItemManager {
         HttpClient client = new DefaultHttpClient();
         HttpUriRequest request = new HttpGet(uri);
         BasicHttpParams basicHttpParams = new BasicHttpParams();
-        basicHttpParams.setParameter("q", queryString);
-        basicHttpParams.setParameter("limit", 100);
         request.setParams(basicHttpParams);
 
 

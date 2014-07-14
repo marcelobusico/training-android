@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.busico.android.training.adapters.ItemsAdapter;
@@ -20,6 +22,7 @@ public class ResultsActivity extends Activity {
 
     private static final String TAG = "Results";
     private final LinkedList<Item> items = new LinkedList<Item>();
+    private String queryString;
     private ItemsAdapter itemsAdapter;
     private ImageDownloadedReceiver receiver;
 
@@ -33,9 +36,17 @@ public class ResultsActivity extends Activity {
         ListView listView = (ListView) findViewById(R.id.lstResults);
         listView.setAdapter(itemsAdapter);
 
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                viewProductDetail((Item) itemsAdapter.getItem(position));
+            }
+        });
+
         if (savedInstanceState == null) {
-            String queryString = getIntent().getStringExtra("queryString");
-            SearchItemsTask.searchItems(queryString, new Closure<LinkedList<Item>>() {
+            queryString = getIntent().getStringExtra("queryString");
+            itemsAdapter.setQueryString(queryString);
+            SearchItemsTask.searchItems(queryString, 15, 0, new Closure<LinkedList<Item>>() {
                 @Override
                 public void executeOnSuccess(LinkedList<Item> result) {
                     showProducts(result);
@@ -43,6 +54,8 @@ public class ResultsActivity extends Activity {
             });
         } else {
             LinkedList<Item> items = (LinkedList<Item>) savedInstanceState.getSerializable("items");
+            queryString = savedInstanceState.getString("queryString");
+            itemsAdapter.setQueryString(queryString);
             showProducts(items);
         }
 
@@ -53,11 +66,18 @@ public class ResultsActivity extends Activity {
         registerReceiver(receiver, filter);
     }
 
+    private void viewProductDetail(Item item) {
+        Intent intent = new Intent(this, ItemDetailsActivity.class);
+        intent.putExtra("item", item);
+        startActivity(intent);
+    }
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         Log.d(TAG, "onSaveInstanceState");
         super.onSaveInstanceState(outState);
         outState.putSerializable("items", items);
+        outState.putString("queryString", queryString);
     }
 
     @Override
