@@ -1,6 +1,7 @@
 package com.busico.android.training.adapters;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,13 +15,16 @@ import com.busico.android.training.entities.Item;
 import com.busico.android.training.tasks.SearchItemsTask;
 import com.busico.android.training.utils.Closure;
 import com.busico.android.training.utils.ContentDownloaderService;
+import com.busico.android.training.utils.ContentListener;
+import com.busico.android.training.utils.ImageRepository;
+import com.busico.android.training.utils.MainThreadHandler;
 
 import java.text.NumberFormat;
 import java.util.LinkedList;
 import java.util.List;
 
 
-public class ItemsAdapter extends BaseAdapter {
+public class ItemsAdapter extends BaseAdapter implements ContentListener {
 
     private static final String TAG = "ItemsAdapter";
     private final LayoutInflater layoutInflater;
@@ -31,6 +35,7 @@ public class ItemsAdapter extends BaseAdapter {
     public ItemsAdapter(LayoutInflater layoutInflater, List<Item> items) {
         this.layoutInflater = layoutInflater;
         this.items = items;
+        MainThreadHandler.getInstance().registerContentListener(this);
     }
 
     public String getQueryString() {
@@ -105,12 +110,14 @@ public class ItemsAdapter extends BaseAdapter {
             if (!item.isDownloadingImage()) {
                 item.setDownloadingImage(true);
 
+                ImageRepository.getInstance().getImage(getContentListenerId(), position, item.getImageUrl());
+
                 //Schedule the download of the item image.
-                Intent contentDownloaderIntent = new Intent(convertView.getContext(), ContentDownloaderService.class);
-                contentDownloaderIntent.putExtra(ContentDownloaderService.URL, item.getImageUrl());
-                contentDownloaderIntent.putExtra(ContentDownloaderService.CONTENT_ID, item.getId());
-                contentDownloaderIntent.putExtra(ContentDownloaderService.INDEX, position);
-                convertView.getContext().startService(contentDownloaderIntent);
+//                Intent contentDownloaderIntent = new Intent(convertView.getContext(), ContentDownloaderService.class);
+//                contentDownloaderIntent.putExtra(ContentDownloaderService.URL, item.getImageUrl());
+//                contentDownloaderIntent.putExtra(ContentDownloaderService.CONTENT_ID, item.getId());
+//                contentDownloaderIntent.putExtra(ContentDownloaderService.INDEX, position);
+//                convertView.getContext().startService(contentDownloaderIntent);
             }
         } else {
             //Set the image already downloaded.
@@ -122,6 +129,18 @@ public class ItemsAdapter extends BaseAdapter {
         }
 
         return convertView;
+    }
+
+    @Override
+    public int getContentListenerId() {
+        return 90000;
+    }
+
+    @Override
+    public void notifyContentAvailable(int position, Object content) {
+        Item item = (Item) getItem(position);
+        item.setImage((Bitmap) content);
+        notifyDataSetChanged();
     }
 
     private void loadMoreData() {
